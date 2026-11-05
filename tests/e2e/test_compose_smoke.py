@@ -65,5 +65,15 @@ def test_every_service_reports_healthy() -> None:
 
 @pytest.mark.usefixtures("stack")
 def test_only_the_gateway_is_published_to_the_host() -> None:
-    assert compose("port", "gateway", "8000").returncode == 0
-    assert compose("port", "orchestrator", "8000").stdout.strip() in {"", ":0"}
+    # Structured data, because the text from `docker compose port` varies by Docker version.
+    listed = compose("ps", "--format", "json").stdout.splitlines()
+    published = {
+        item["Service"]: {
+            (port["URL"], port["PublishedPort"])
+            for port in item["Publishers"]
+            if port["PublishedPort"]
+        }
+        for item in map(json.loads, listed)
+    }
+
+    assert published == {"gateway": {("127.0.0.1", 8000)}, "orchestrator": set()}
