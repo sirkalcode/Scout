@@ -1,0 +1,35 @@
+name: scout
+
+x-healthcheck: &healthcheck
+  test:
+    - CMD
+    - python
+    - -c
+    - "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"
+  interval: 5s
+  timeout: 3s
+  retries: 12
+  start_period: 10s
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    environment:
+      ORCHESTRATOR_URL: http://orchestrator:8000
+    ports:
+      - "127.0.0.1:8000:8000" # the only service published to the host
+    depends_on:
+      orchestrator:
+        condition: service_healthy
+    healthcheck: *healthcheck
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: services/orchestrator/Dockerfile
+    environment:
+      LLM_GATEWAY_URL: http://llm-gateway:8000
+      LLM_GATEWAY_TOKEN: ${LLM_GATEWAY_TOKEN:-local-dev-token}
+    healthcheck: *healthcheck

@@ -1,6 +1,7 @@
 """Every service answers /healthz with the shared HealthResponse contract."""
 
 from fastapi.testclient import TestClient
+
 from gateway.app import create_app
 from scout_contracts.health import HealthResponse
 

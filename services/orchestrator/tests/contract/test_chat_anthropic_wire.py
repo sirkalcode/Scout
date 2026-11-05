@@ -8,9 +8,10 @@ import pytest
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage
 from langchain_core.tools import tool
+from pydantic import SecretStr
+
 from orchestrator.llm import DEFAULT_MAX_TOKENS, build_chat_model
 from orchestrator.settings import Settings
-from pydantic import SecretStr
 
 from .conftest import FakeAnthropicApi
 

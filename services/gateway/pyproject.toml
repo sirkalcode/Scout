@@ -5,7 +5,7 @@ description = "Public entry point: auth, rate limits, run API and streaming"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
-    "httpx>=0.28",
+    "httpx2>=2.0",
     "pydantic-settings>=2.6",
     "scout-contracts",
     "uvicorn>=0.32",

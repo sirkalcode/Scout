@@ -4,8 +4,9 @@ import socket
 
 import pytest
 from fastapi.testclient import TestClient
-from orchestrator.app import create_app
 from pytest_socket import SocketBlockedError
+
+from orchestrator.app import create_app
 from scout_contracts.health import HealthResponse
 
 

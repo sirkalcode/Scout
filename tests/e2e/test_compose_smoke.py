@@ -6,7 +6,7 @@ import subprocess
 from collections.abc import Iterator
 from pathlib import Path
 
-import httpx
+import httpx2
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,8 +35,8 @@ def stack() -> Iterator[None]:
         compose("down", "--volumes", "--remove-orphans")
 
 
-def get(path: str) -> httpx.Response:
-    return httpx.get(f"{GATEWAY_URL}{path}", timeout=5, trust_env=False)
+def get(path: str) -> httpx2.Response:
+    return httpx2.get(f"{GATEWAY_URL}{path}", timeout=5, trust_env=False)
 
 
 @pytest.mark.usefixtures("stack")

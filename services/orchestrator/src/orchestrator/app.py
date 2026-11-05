@@ -3,6 +3,7 @@
 from importlib.metadata import version
 
 from fastapi import FastAPI
+
 from scout_contracts.health import HealthResponse
 
 SERVICE = "orchestrator"
