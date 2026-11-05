@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 
 import pytest
+
 from llm_gateway.budget import BudgetExceeded, BudgetGuard
 from llm_gateway.ledger import DaySpend, InMemoryLedger, LedgerError, SpendRecord
 from llm_gateway.usage import Usage

@@ -4,7 +4,8 @@ Scout is a vulnerability triage assistant. Given a software bill of materials, i
 affected components, decides what to fix first and explains why. It is a defensive tool: it
 helps people decide what to patch, and it neither writes nor collects exploit code.
 
-**Status:** Day 1 of 40. The service skeletons, CI and local stack exist. There are no agents yet.
+**Status:** Day 2 of 40. The service skeletons, CI, local stack and `llm-gateway` exist. There are
+no agents yet.
 
 ## Quick start
 
@@ -18,15 +19,27 @@ curl http://127.0.0.1:8000/readyz
 make down
 ```
 
-Run `make help` to see every command.
+Run `make help` to see every command. By default the stack uses a fake Claude, so it costs nothing.
+
+## Calling the real Claude
+
+1. Copy `.env.example` to `.env`. Git ignores `.env`, so your key stays on your machine.
+2. In `.env`, set `LLM_GATEWAY_MODE=real` and `ANTHROPIC_API_KEY=<your key>`.
+3. Run `make up`, then `make live-check`. This makes two very small Claude calls and prints the
+   text, tokens and cost.
+
+`llm-gateway` refuses further calls once the day's spend reaches `LLM_DAILY_LIMIT_USD`.
 
 ## Layout
 
 | Path | What it holds |
 | --- | --- |
 | `libs/contracts` | Pydantic models shared across services |
+| `libs/testkit` | Test doubles, including `FakeClaude` |
 | `services/gateway` | Public entry point |
+| `services/llm-gateway` | Holds the Claude key; handles cost, retries and the daily limit |
 | `services/orchestrator` | Main agent engine on LangChain and LangGraph, with its own lockfile |
+| `deploy/postgres` | Database setup for local Compose |
 | `tests/e2e` | Black-box tests against the Compose stack |
 | `docs/adr` | Decision records |
 

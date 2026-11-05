@@ -5,6 +5,7 @@ from decimal import Decimal
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+
 from llm_gateway.pricing import UnknownModel, cost_usd, worst_case_cost_usd
 from llm_gateway.usage import Usage
 
@@ -41,7 +42,15 @@ def test_published_rates(model: str, field: str, dollars: str) -> None:
         (Usage(input_tokens=1, cache_write_1h_tokens=100_000), "0.1000005"),
         (Usage(input_tokens=100_001, output_tokens=M), "2.5500005"),
     ],
-    ids=["at-limit", "at-limit-output", "over", "cache-read", "write-5m", "write-1h", "over-output"],
+    ids=[
+        "at-limit",
+        "at-limit-output",
+        "over",
+        "cache-read",
+        "write-5m",
+        "write-1h",
+        "over-output",
+    ],
 )
 def test_haiku_tier_counts_every_input_token(usage: Usage, dollars: str) -> None:
     assert cost_usd("claude-haiku-5-5", usage) == Decimal(dollars)

@@ -3,6 +3,7 @@
 from collections.abc import Callable
 
 import pytest
+
 from scout_testkit import fake_claude as claude
 
 from ..conftest import Harness

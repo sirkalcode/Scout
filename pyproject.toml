@@ -21,7 +21,7 @@ dev = [
 package = false
 
 [tool.uv.workspace]
-members = ["libs/*", "services/gateway", "services/llm-gateway"]
+members = ["libs/*", "services/*"]
 # orchestrator keeps its own lockfile, so framework pins cannot affect other services.
 exclude = ["services/orchestrator"]
 
@@ -32,7 +32,13 @@ addopts = "--import-mode=importlib"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-src = ["libs/contracts/src", "services/gateway/src", "services/orchestrator/src"]
+src = [
+    "libs/contracts/src",
+    "libs/testkit/src",
+    "services/gateway/src",
+    "services/llm-gateway/src",
+    "services/orchestrator/src",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC", "S", "RUF"]

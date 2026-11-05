@@ -5,10 +5,11 @@ from collections.abc import AsyncIterator, Iterator
 from decimal import Decimal
 
 import pytest
-from llm_gateway.ledger import LedgerError, PostgresLedger
-from llm_gateway.migrate import upgrade_to_head
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
+
+from llm_gateway.ledger import LedgerError, PostgresLedger
+from llm_gateway.migrate import upgrade_to_head
 
 from ..ledger_contract import DAY, LedgerContract, record
 

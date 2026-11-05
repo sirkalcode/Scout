@@ -3,7 +3,7 @@ name = "scout-testkit"
 version = "0.1.0"
 description = "Test doubles shared across Scout services, including FakeClaude"
 requires-python = ">=3.12"
-dependencies = ["httpx2>=2.0", "pydantic>=2.7"]
+dependencies = ["httpx2>=2.0"]
 
 [build-system]
 requires = ["hatchling"]

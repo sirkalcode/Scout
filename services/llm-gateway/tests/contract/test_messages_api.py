@@ -4,6 +4,7 @@ from collections.abc import Callable
 from decimal import Decimal
 
 import pytest
+
 from llm_gateway.ledger import InMemoryLedger
 from scout_testkit import fake_claude as claude
 
@@ -175,6 +176,19 @@ def test_cost_comes_from_raw_usage(harness: Callable[..., Harness]) -> None:
     assert h.ledger.records[0].cost_usd == Decimal("0.0042")
     assert h.ledger.records[0].usage.input_tokens == 1000
     assert h.ledger.records[0].created_at == NOW
+
+
+def test_unreadable_success_is_charged_at_the_reserved_amount(
+    harness: Callable[..., Harness],
+) -> None:
+    h = harness(claude.raw_response("not json"))
+
+    response = h.post()
+
+    assert response.status_code == 200
+    assert response.text == "not json"
+    assert h.ledger.records[0].estimated
+    assert h.ledger.records[0].cost_usd > 0
 
 
 def test_upstream_errors_pass_through_with_no_charge(harness: Callable[..., Harness]) -> None:

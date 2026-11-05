@@ -32,4 +32,43 @@ services:
     environment:
       LLM_GATEWAY_URL: http://llm-gateway:8000
       LLM_GATEWAY_TOKEN: ${LLM_GATEWAY_TOKEN:-local-dev-token}
+    depends_on:
+      llm-gateway:
+        condition: service_healthy
     healthcheck: *healthcheck
+
+  llm-gateway:
+    build:
+      context: .
+      dockerfile: services/llm-gateway/Dockerfile
+    environment:
+      LLM_GATEWAY_MODE: ${LLM_GATEWAY_MODE:-fake}
+      LLM_GATEWAY_TOKEN: ${LLM_GATEWAY_TOKEN:-local-dev-token}
+      LLM_DAILY_LIMIT_USD: ${LLM_DAILY_LIMIT_USD:-15}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-} # no other service receives this
+      DATABASE_URL: postgresql+asyncpg://llm_gateway:${LLM_DB_PASSWORD:-local-dev-password}@postgres:5432/scout
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck: *healthcheck
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: scout
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-dev-password}
+      LLM_DB_PASSWORD: ${LLM_DB_PASSWORD:-local-dev-password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./deploy/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # TCP on purpose: during first-time setup the temporary server listens on a socket only.
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "scout"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  postgres-data:

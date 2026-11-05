@@ -5,6 +5,7 @@ from typing import Any
 
 from hypothesis import given
 from hypothesis import strategies as st
+
 from llm_gateway.usage import StreamUsageTracker, Usage, usage_from_message
 
 
@@ -32,7 +33,9 @@ DELTA = {
 }
 END = {"type": "message_delta", "delta": {"stop_reason": "end_turn"}, "usage": {"output_tokens": 9}}
 STOP = {"type": "message_stop"}
-EXPECTED = Usage(input_tokens=10, output_tokens=9, cache_read_input_tokens=7, cache_write_5m_tokens=3)
+EXPECTED = Usage(
+    input_tokens=10, output_tokens=9, cache_read_input_tokens=7, cache_write_5m_tokens=3
+)
 
 
 def test_message_usage_keeps_input_tokens_separate_from_cache() -> None:
@@ -48,7 +51,10 @@ def test_cache_write_breakdown_is_used_when_present() -> None:
         {
             "usage": {
                 "cache_creation_input_tokens": 30,
-                "cache_creation": {"ephemeral_5m_input_tokens": 10, "ephemeral_1h_input_tokens": 20},
+                "cache_creation": {
+                    "ephemeral_5m_input_tokens": 10,
+                    "ephemeral_1h_input_tokens": 20,
+                },
             }
         }
     )
@@ -104,7 +110,7 @@ def test_cut_off_stream_estimates_output_from_the_text_seen() -> None:
 def test_stream_cut_before_any_usage_is_empty() -> None:
     tracker = StreamUsageTracker()
 
-    tracker.feed(b"event: message_start\ndata: {\"type\":")
+    tracker.feed(b'event: message_start\ndata: {"type":')
 
     assert tracker.usage == Usage()
     assert not tracker.complete

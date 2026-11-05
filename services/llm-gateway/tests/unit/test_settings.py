@@ -1,8 +1,9 @@
 """A real-mode gateway must not start half-configured."""
 
 import pytest
-from llm_gateway.settings import Settings
 from pydantic import SecretStr, ValidationError
+
+from llm_gateway.settings import Settings
 
 
 def test_fake_mode_needs_no_key_or_database() -> None:

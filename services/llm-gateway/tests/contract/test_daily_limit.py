@@ -6,14 +6,15 @@ from decimal import Decimal
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from pydantic import SecretStr
+
 from llm_gateway.app import create_app
 from llm_gateway.ledger import DaySpend, InMemoryLedger, LedgerError, SpendRecord
 from llm_gateway.settings import Settings
 from llm_gateway.usage import Usage
-from pydantic import SecretStr
 from scout_testkit import fake_claude as claude
 
-from ..conftest import AUTH, NOW, Harness, body
+from ..conftest import NOW, Harness, body
 
 
 class DownLedger(InMemoryLedger):
@@ -64,7 +65,7 @@ def test_yesterdays_spend_does_not_count(harness: Callable[..., Harness]) -> Non
 
 def test_calls_add_up_until_the_limit_stops_them(harness: Callable[..., Harness]) -> None:
     usage = claude.TokenUsage(input_tokens=500_000, output_tokens=0)
-    h = harness(claude.end_turn("a", usage=usage), claude.end_turn("b", usage=usage), limit="1.01")
+    h = harness(claude.end_turn("a", usage=usage), claude.end_turn("b", usage=usage), limit="1.001")
 
     assert h.post().status_code == 200  # $1 spent
     assert h.post().status_code == 402
@@ -97,9 +98,7 @@ def test_fake_mode_runs_with_no_key_or_database() -> None:
     )
 
     with TestClient(create_app(settings)) as client:
-        response = client.post(
-            "/v1/messages", json=body(), headers={"authorization": "Bearer t"}
-        )
+        response = client.post("/v1/messages", json=body(), headers={"authorization": "Bearer t"})
 
     assert response.status_code == 200
     assert response.json()["stop_reason"] == "end_turn"
@@ -116,6 +115,6 @@ def test_fake_mode_can_replay_a_script_file(tmp_path: Path) -> None:
     )
 
     with TestClient(create_app(settings)) as client:
-        response = client.post("/v1/messages", json=body(), headers=AUTH | {"authorization": "Bearer t"})
+        response = client.post("/v1/messages", json=body(), headers={"authorization": "Bearer t"})
 
     assert response.json()["stop_reason"] == "tool_use"

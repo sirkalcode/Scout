@@ -1164,14 +1164,10 @@ version = "0.1.0"
 source = { editable = "libs/testkit" }
 dependencies = [
     { name = "httpx2" },
-    { name = "pydantic" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "httpx2", specifier = ">=2.0" },
-    { name = "pydantic", specifier = ">=2.7" },
-]
+requires-dist = [{ name = "httpx2", specifier = ">=2.0" }]
 
 [[package]]
 name = "sortedcontainers"

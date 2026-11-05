@@ -8,10 +8,11 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import SecretStr
+
 from llm_gateway.app import create_app
 from llm_gateway.ledger import InMemoryLedger
 from llm_gateway.settings import Settings
-from pydantic import SecretStr
 from scout_testkit.fake_claude import FakeClaude, Step
 
 TOKEN = "internal-token"

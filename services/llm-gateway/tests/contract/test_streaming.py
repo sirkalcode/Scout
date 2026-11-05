@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Callable
 from decimal import Decimal
 
 import pytest
+
 from llm_gateway.upstream import relay_stream
 from llm_gateway.usage import StreamUsageTracker
 from scout_testkit import fake_claude as claude
@@ -55,6 +56,18 @@ def test_failure_before_the_first_byte_is_retried(harness: Callable[..., Harness
     assert response.status_code == 200
     assert "message_stop" in response.text
     assert len(h.fake.requests) == 3
+
+
+def test_connection_lost_before_the_first_event_is_retried(
+    harness: Callable[..., Harness],
+) -> None:
+    h = harness(claude.dropped_stream("x", after_events=0), claude.end_turn("ok"))
+
+    response = h.post(stream=True)
+
+    assert "message_stop" in response.text
+    assert "event: error" not in response.text
+    assert len(h.fake.requests) == 2
 
 
 def test_stream_that_never_starts_returns_the_error_as_json(
