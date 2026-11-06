@@ -1,5 +1,6 @@
 """Streams pass through untouched, retry only before the first byte, and are always costed."""
 
+import json
 from collections.abc import AsyncIterator, Callable
 from decimal import Decimal
 
@@ -34,6 +35,22 @@ def test_events_pass_through_in_order(harness: Callable[..., Harness]) -> None:
         "message_stop",
     ]
     assert "Patch first." in response.text
+
+
+def test_fake_stream_repeats_usage_in_message_delta_like_the_real_api(
+    harness: Callable[..., Harness],
+) -> None:
+    usage = claude.TokenUsage(input_tokens=26, output_tokens=23)
+
+    response = harness(claude.end_turn("hi", usage=usage)).post(stream=True)
+
+    final = next(
+        json.loads(line.removeprefix("data: "))
+        for line in response.text.splitlines()
+        if line.startswith("data: ") and '"message_delta"' in line
+    )
+    assert final["usage"]["input_tokens"] == 26
+    assert final["usage"]["output_tokens"] == 23
 
 
 def test_stream_cost_comes_from_raw_usage(harness: Callable[..., Harness]) -> None:
