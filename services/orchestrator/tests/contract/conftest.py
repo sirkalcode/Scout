@@ -52,7 +52,8 @@ STREAM_EVENTS: list[dict[str, Any]] = [
     {
         "type": "message_delta",
         "delta": {"stop_reason": "end_turn", "stop_sequence": None},
-        "usage": {"output_tokens": 2},
+        # Like the real API, the final event repeats the full usage, input included.
+        "usage": {**MESSAGE["usage"], "output_tokens": 2},
     },
     {"type": "message_stop"},
 ]

@@ -25,6 +25,7 @@ def test_report_covers_both_calls_and_the_ledger(fake_api: FakeAnthropicApi) -> 
     assert [request.body.get("model") for request in fake_api.requests] == ["claude-haiku-5-5"] * 2
 
 
+@pytest.mark.enable_socket
 def test_token_limit_leaves_room_for_thinking(fake_api: FakeAnthropicApi) -> None:
     # A live call with 32 tokens spent them all on thinking and returned no text.
     run(Settings(llm_gateway_url=fake_api.url))

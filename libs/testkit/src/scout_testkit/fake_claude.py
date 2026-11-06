@@ -160,7 +160,8 @@ def _stream_events(step: Step, model: str, number: int) -> list[dict[str, Any]]:
         {
             "type": "message_delta",
             "delta": {"stop_reason": step.stop_reason, "stop_sequence": None},
-            "usage": {"output_tokens": step.usage.output_tokens},
+            # Like the real API, the final event repeats the full usage, input included.
+            "usage": _usage_json(step.usage),
         }
     )
     events.append({"type": "message_stop"})
