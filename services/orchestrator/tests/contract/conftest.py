@@ -86,6 +86,19 @@ def fake_api(monkeypatch: pytest.MonkeyPatch) -> Iterator[FakeAnthropicApi]:
         def log_message(self, format: str, *args: Any) -> None:
             pass
 
+        def do_GET(self) -> None:
+            calls = len(recorded)
+            self._send_json(
+                {
+                    "date": "2026-11-05",
+                    "mode": "fake",
+                    "limit_usd": "15",
+                    "spent_usd": str(calls * 0.01),
+                    "remaining_usd": "14",
+                    "requests": calls,
+                }
+            )
+
         def do_POST(self) -> None:
             length = int(self.headers.get("content-length", "0"))
             body = json.loads(self.rfile.read(length))

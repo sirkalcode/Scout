@@ -1,0 +1,13 @@
+# Used only by the smoke test. It has its own project and port, so it never touches your running
+# stack, and it forces fake mode, so it cannot spend money even with a real key in .env.
+name: scout-test
+
+services:
+  gateway:
+    ports: !override
+      - "127.0.0.1:18000:8000"
+
+  llm-gateway:
+    environment:
+      LLM_GATEWAY_MODE: fake
+      ANTHROPIC_API_KEY: ""
