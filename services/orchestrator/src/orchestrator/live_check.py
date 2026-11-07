@@ -14,8 +14,9 @@ from .llm import build_chat_model
 from .settings import Settings
 
 MODEL = "claude-haiku-5-5"
-MAX_TOKENS = 32
-PROMPT = "Reply with one short sentence confirming you can hear me."
+# Thinking tokens count toward max_tokens. A live call with 32 spent them all on thinking.
+MAX_TOKENS = 512
+PROMPT = "Say hello in one short sentence."
 
 
 def _spend(settings: Settings) -> SpendToday:
@@ -48,11 +49,13 @@ def run(settings: Settings) -> dict[str, Any]:
         "model": MODEL,
         "invoke": {
             "text": answer.text,
+            "stop_reason": answer.response_metadata.get("stop_reason"),
             "usage_metadata": answer.usage_metadata,
             "raw_usage": answer.response_metadata.get("usage"),
         },
         "stream": {
             "text": merged.text,
+            "stop_reason": merged.response_metadata.get("stop_reason"),
             "usage_metadata": merged.usage_metadata,
         },
         "ledger": {

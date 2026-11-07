@@ -54,13 +54,26 @@ does not prove the real API accepts the request.
    for `claude-sonnet-5-5`, which is a budget risk.
    - **Guard now:** `build_chat_model` always sets it, with a default of 4,096.
 
+4. **Thinking tokens count toward `max_tokens`.** In the live call, `claude-haiku-5-5` spent all
+   32 output tokens on thinking (`thinking_tokens: 32`) and returned empty text.
+   - **Guard now:** the live check allows 512 tokens and reports `stop_reason`. Agents
+     keep the 4,096 default, and a `max_tokens` stop must be handled, not treated as an answer.
+
+## Live check, 2026-11-06
+
+One normal and one streaming call with `claude-haiku-5-5`, through `llm-gateway` in real mode.
+
+- **Streaming usage is correct.** LangChain's merged stream reported 26 input tokens, matching
+  the normal call. The real `message_delta` repeats the input counts, so the 0 seen earlier came
+  from the fake API's format, not LangChain. `FakeClaude` and the orchestrator's fake API now
+  send the same format as the real API.
+- **Bearer auth, the API version header and the gateway's key handling** worked against the real
+  API.
+- **Responses now include** `inference_geo: "global"`, `service_tier` and `speed` in `usage`.
+  These are reported back, not requested, so the gateway still prices them at standard rates.
+
 ## Open questions
 
-- **Streaming usage:** when the fake API's `message_delta` carried only `output_tokens`,
-  LangChain's merged stream usage showed 0 input tokens, even though `message_start` had them.
-  What the real API sends has not been checked, so `llm-gateway` should read usage from the
-  stream itself. Check this with a live call on Day 2.
-- **Live call:** make one real call through `ChatAnthropic` once `llm-gateway` has a key.
 - **MCP:** `langchain[mcp]` and `MCPAdapter` are not installed or tested yet. Check them on
   Day 7. The `fastmcp` it depends on should be resolved alongside the `mcp` 2.x SDK.
 
