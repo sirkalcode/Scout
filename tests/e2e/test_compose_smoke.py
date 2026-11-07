@@ -126,3 +126,19 @@ def test_spend_survives_a_gateway_restart() -> None:
     compose("up", "--wait", "--wait-timeout", "60", "llm-gateway")
 
     assert json.loads(compose(*spend).stdout)["requests"] == before["requests"]
+
+
+@pytest.mark.usefixtures("stack")
+def test_hand_written_agent_runs_through_the_gateway() -> None:
+    result = compose(
+        "exec",
+        "-T",
+        "orchestrator",
+        "/app/services/orchestrator/.venv/bin/python",
+        "-m",
+        "orchestrator.hand_loop.demo",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "stop_reason: end_turn" in result.stdout
+    assert "mode: fake" in result.stdout

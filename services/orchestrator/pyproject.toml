@@ -22,6 +22,7 @@ dev = [
     "pytest>=8.3",
     "pytest-socket>=0.7",
     "ruff>=0.11",
+    "scout-testkit",
 ]
 
 [build-system]
@@ -33,6 +34,7 @@ packages = ["src/orchestrator"]
 
 [tool.uv.sources]
 scout-contracts = { path = "../../libs/contracts", editable = true }
+scout-testkit = { path = "../../libs/testkit", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

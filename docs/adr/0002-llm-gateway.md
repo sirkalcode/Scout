@@ -29,4 +29,6 @@ It is the only service with the Claude key. Agents use a separate internal token
 - Requests with `speed` or `inference_geo` are refused until the cost math covers them.
 - Web search is charged afterwards at $0.01 per search but is not in the reservation, so a request
   using it can pass the limit by a small amount.
+- Requests that continue a message thread (`thread: continue`) carry only new content, so the
+  size-based reservation underestimates them. Recorded spend is still exact. See Day 3 notes.
 - A stream that fails before `message_start` records nothing, because no usage is known.

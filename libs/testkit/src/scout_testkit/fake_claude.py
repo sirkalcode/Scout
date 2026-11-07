@@ -46,8 +46,20 @@ def end_turn(text: str = DEFAULT_REPLY, *, usage: TokenUsage | None = None) -> S
     return Step(content=[text_block(text)], usage=usage or TokenUsage())
 
 
-def tool_use(name: str, tool_input: dict[str, Any], *, usage: TokenUsage | None = None) -> Step:
-    block = {"type": "tool_use", "id": "toolu_fake", "name": name, "input": tool_input}
+def tool_use_block(
+    name: str, tool_input: dict[str, Any], *, tool_id: str = "toolu_fake"
+) -> dict[str, Any]:
+    return {"type": "tool_use", "id": tool_id, "name": name, "input": tool_input}
+
+
+def tool_use(
+    name: str,
+    tool_input: dict[str, Any],
+    *,
+    tool_id: str = "toolu_fake",
+    usage: TokenUsage | None = None,
+) -> Step:
+    block = tool_use_block(name, tool_input, tool_id=tool_id)
     return Step(content=[block], stop_reason="tool_use", usage=usage or TokenUsage())
 
 

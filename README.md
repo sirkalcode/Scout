@@ -4,8 +4,8 @@ Scout is a vulnerability triage assistant. Given a software bill of materials, i
 affected components, decides what to fix first and explains why. It is a defensive tool: it
 helps people decide what to patch, and it neither writes nor collects exploit code.
 
-**Status:** Day 2 of 40. The service skeletons, CI, local stack and `llm-gateway` exist. There are
-no agents yet.
+**Status:** Day 3 of 40. The services, CI, local stack, `llm-gateway` and one hand-written agent
+loop exist.
 
 ## Quick start
 
@@ -28,6 +28,8 @@ Run `make help` to see every command. By default the stack uses a fake Claude, s
 3. Run `make up`, then `make live-check`. This makes two very small Claude calls and prints the
    text, tokens and cost.
 
+Run `make agent-demo` to see the Day 3 agent use two tools, with every message printed.
+
 `llm-gateway` refuses further calls once the day's spend reaches `LLM_DAILY_LIMIT_USD`.
 
 ## Layout
@@ -42,6 +44,7 @@ Run `make help` to see every command. By default the stack uses a fake Claude, s
 | `deploy/postgres` | Database setup for local Compose |
 | `tests/e2e` | Black-box tests against the Compose stack |
 | `docs/adr` | Decision records |
+| `docs/learning` | Plain-language notes on each day's main idea |
 
 ## Working rules
 
