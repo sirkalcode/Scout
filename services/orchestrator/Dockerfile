@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir uv==0.11.32 \
     && useradd --create-home --uid 10001 scout
 
 COPY libs/contracts/ /app/libs/contracts/
+COPY libs/testkit/ /app/libs/testkit/
 COPY services/orchestrator/ /app/services/orchestrator/
 WORKDIR /app/services/orchestrator
 # This service has its own lockfile, so framework pins stay isolated from the others.

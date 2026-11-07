@@ -645,6 +645,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-socket" },
     { name = "ruff" },
+    { name = "scout-testkit" },
 ]
 
 [package.metadata]
@@ -667,6 +668,7 @@ dev = [
     { name = "pytest", specifier = ">=8.3" },
     { name = "pytest-socket", specifier = ">=0.7" },
     { name = "ruff", specifier = ">=0.11" },
+    { name = "scout-testkit", editable = "../../libs/testkit" },
 ]
 
 [[package]]
@@ -1086,6 +1088,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "pydantic", specifier = ">=2.7" }]
+
+[[package]]
+name = "scout-testkit"
+version = "0.1.0"
+source = { editable = "../../libs/testkit" }
+dependencies = [
+    { name = "httpx2" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "httpx2", specifier = ">=2.0" }]
 
 [[package]]
 name = "sniffio"
