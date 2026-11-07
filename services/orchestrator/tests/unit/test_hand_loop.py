@@ -8,11 +8,11 @@ from typing import Any
 
 import pytest
 from anthropic.lib.tools import ToolError
+from pydantic import BaseModel, ConfigDict
+
 from orchestrator.hand_loop.loop import run_agent
 from orchestrator.hand_loop.sample_tools import SAMPLE_TOOLS
 from orchestrator.hand_loop.tools import LocalTool
-from pydantic import BaseModel, ConfigDict
-
 from scout_testkit import fake_claude as claude
 from scout_testkit.fake_claude import FakeClaude, Step
 

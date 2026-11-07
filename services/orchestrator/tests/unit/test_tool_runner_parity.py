@@ -4,10 +4,10 @@ Same tools, same scripted replies: the requests Claude would see should match.
 """
 
 import pytest
+
 from orchestrator.hand_loop.loop import run_agent
 from orchestrator.hand_loop.sample_tools import SAMPLE_TOOLS
 from orchestrator.hand_loop.tool_runner import run_with_tool_runner
-
 from scout_testkit import fake_claude as claude
 from scout_testkit.fake_claude import FakeClaude, Step
 
@@ -51,3 +51,23 @@ async def test_tool_runner_respects_the_step_limit() -> None:
     )
 
     assert len(fake.requests) == 2
+
+
+@pytest.mark.anyio
+async def test_with_a_thread_later_requests_send_only_the_new_results() -> None:
+    fake = FakeClaude(script())
+
+    await run_with_tool_runner(
+        client_for(fake),
+        model="claude-haiku-5-5",
+        question="Worry?",
+        tools=SAMPLE_TOOLS,
+        use_thread=True,
+    )
+
+    first, second = fake.requests[0], fake.requests[1]
+    assert "message-threads" in first.headers["anthropic-beta"]
+    assert first.body["thread"] == {"type": "create"}
+    assert second.body["thread"] == {"type": "continue", "previous_message_id": "msg_fake_1"}
+    assert "tools" not in second.body
+    assert [message["role"] for message in second.body["messages"]] == ["user"]

@@ -2,6 +2,8 @@
 
 import pytest
 from anthropic.lib.tools import ToolError
+from pydantic import ValidationError
+
 from orchestrator.hand_loop.sample_tools import (
     CHECK_KEV,
     LOOKUP_CVE,
@@ -10,7 +12,6 @@ from orchestrator.hand_loop.sample_tools import (
     check_kev,
     lookup_cve,
 )
-from pydantic import ValidationError
 
 
 @pytest.fixture

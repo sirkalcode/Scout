@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 ORCHESTRATOR := services/orchestrator
 
-.PHONY: help sync lint types test test-gateway test-llm-gateway test-orchestrator test-int smoke check up down logs live-check
+.PHONY: help sync lint types test test-gateway test-llm-gateway test-orchestrator test-int smoke check up down logs live-check agent-demo
 
 help: ## Show these commands
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-20s %s\n", $$1, $$2}'
@@ -45,6 +45,10 @@ down: ## Stop the local stack and remove its volumes
 
 live-check: ## Call Claude once through the running stack. Spends money only in real mode
 	docker compose exec -T orchestrator /app/services/orchestrator/.venv/bin/python -m orchestrator.live_check
+
+agent-demo: ## Run the Day 3 agent and print every message. Q="question" MODEL=claude-sonnet-5-5
+	docker compose exec -T orchestrator /app/services/orchestrator/.venv/bin/python \
+		-m orchestrator.hand_loop.demo $(if $(Q),"$(Q)") $(if $(MODEL),--model $(MODEL))
 
 logs: ## Follow logs from the local stack
 	docker compose logs --follow
